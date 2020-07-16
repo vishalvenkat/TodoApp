@@ -5,18 +5,47 @@ import { AppComponent } from './app.component';
 import { MaterialModule} from './Modules/material/material.module';
 import { HeaderComponent } from './Components/header/header.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { FooterComponent } from './Components/footer/footer.component';
+import { RouterModule, Routes } from '@angular/router';
+import { IndexComponent } from './Components/index/index.component';
+import { GetStartedComponent } from './Components/get-started/get-started.component';
+import { LoginComponent } from './Components/login/login.component';
+import { RegistrationComponent } from './Components/registration/registration.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HomePageComponent} from './Components/home-page/home-page.component';
+import { CommonModule } from '@angular/common';
+import { AddTodoComponent } from './Components/add-todo/add-todo.component';
+
+const appRoutes: Routes = [
+  {path: '', component: IndexComponent},
+  {path: 'Homepage', component: HomePageComponent}
+];
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent
+    HeaderComponent,
+    FooterComponent,
+    IndexComponent,
+    GetStartedComponent,
+    LoginComponent,
+    RegistrationComponent,
+    HomePageComponent,
+    AddTodoComponent
   ],
   imports: [
     BrowserModule,
     MaterialModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FlexLayoutModule,
+    RouterModule.forRoot(appRoutes),
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule
   ],
   providers: [],
+  entryComponents: [GetStartedComponent, AddTodoComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
