@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {TodoService} from '../../Services/todo.service';
 import { UserService } from 'src/app/Services/user.service';
 import {Todo} from '../../Class/todo';
 import { MatDialog } from '@angular/material/dialog';
 import { AddTodoComponent } from '../add-todo/add-todo.component';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { MatTable } from '@angular/material/table';
 @Component({
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.css']
 })
 export class HomePageComponent implements OnInit {
+  @ViewChild('table') table: MatTable<Todo>;
+  @ViewChild('table1') table1: MatTable<Todo>;
+  @ViewChild('table2') table2: MatTable<Todo>;
 user: string;
 todos: Todo[];
 openTodoList: Todo[];
@@ -84,5 +88,27 @@ dataSourceForCompletedTodo: any;
         this.updateTodoList(data.status);
       }
     })
+  }
+
+  dragAndDrop = (event: CdkDragDrop<Todo[]>, dataSource: any) => {
+    let table = this.getTable(event.container.data[0].status);
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      let targetTable = this.getTable(event.previousContainer.data[0].status);
+      transferArrayItem(event.previousContainer.data,
+                        event.container.data,
+                        event.previousIndex,
+                        event.currentIndex);
+      targetTable.renderRows();                   
+    }
+    table.renderRows();
+  }
+  getTable = (tableName: string) :MatTable<Todo> => {
+    switch(tableName) {
+      case 'Open': return this.table;
+      case 'InProgress': return this.table1;
+      case 'Completed': return this.table2;
+    }
   }
 }
