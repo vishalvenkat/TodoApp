@@ -31,9 +31,14 @@ dataSourceForCompletedTodo: any;
   }
 
   addTodos = (): void  => {
-      let ref = this.addTodo.open(AddTodoComponent);
+      let ref = this.addTodo.open(AddTodoComponent, {data: {
+        edit: false,
+        title: '', description: '', startDate: '', endDate: '', startTime: '', endTime: '', status: ''
+      }});
       ref.afterClosed().subscribe(result => {
+        console.log('closed while add')
         if(result !== undefined) {
+          console.log(`start date = ${result.startDate}, endDate = ${result.endDate}, startTime = ${result.startTime}, endTime = ${result.endTime}`);
         this.todoService.addTodo(result.title, result.description, new Date(result.startDate), new Date(result.endDate), result.status);
         this.updateTodoList(result.status);
       }
@@ -59,5 +64,25 @@ dataSourceForCompletedTodo: any;
   initCompletedTodoList = (): void  => {
     this.completedTodoList = this.todoService.getTodosWithFilter('Completed');
     this.dataSourceForCompletedTodo = this.completedTodoList;
+  }
+  editTodo = (todo: Todo) => {
+    let ref = this.addTodo.open(AddTodoComponent, {data: {
+      edit: true,
+      title: todo.todoTitle, description: todo.todoDescription,
+      startDate: '', endDate: '', startTime: todo.startTime, endTime: todo.endTime, status: todo.status
+    }});
+    ref.afterClosed().subscribe(data => {
+      if (data !== undefined) {
+        todo.todoTitle = data.title;
+        todo.todoDescription = data.description;
+        todo.startTime = data.startDate;
+        todo.endTime = data.endDate;
+        this.updateTodoList(todo.status);
+        todo.status = data.status;
+        console.log(`updated todo status: ${todo.status}`);
+        this.todoService.updateTodo(todo);
+        this.updateTodoList(data.status);
+      }
+    })
   }
 }

@@ -5,7 +5,7 @@ export class Todo {
     todoDescription: string;
     startTime: Date;
     endTime: Date;
-    status: String;
+    status: string;
 
     constructor(todoId: number, userId: number, todoTitle: string,
         todoDescription: string, startTime: Date, endTime: Date, status: string) {

@@ -38,4 +38,10 @@ export class TodoService {
     todoList = todoList.filter(todo => todo.status === reqStatus);
     return todoList === null? []: todoList;
   }
+  updateTodo = (todo: Todo): void => {
+    let todoList = this.getTodos();
+    let index = todoList.findIndex(todos => todos.todoId === todo.todoId);
+    todoList[index] = todo;
+    this.setLocalStorageTodos(todoList);
+  }
 }
