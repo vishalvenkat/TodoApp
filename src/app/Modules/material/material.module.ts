@@ -11,6 +11,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTableModule} from '@angular/material/table';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 const angularMaterial = [
   MatToolbarModule,
   MatButtonModule,
@@ -23,7 +26,10 @@ const angularMaterial = [
   MatTooltipModule,
   MatInputModule,
   MatDatepickerModule,
-  MatNativeDateModule
+  MatNativeDateModule,
+  MatSelectModule,
+  MatTableModule,
+  DragDropModule
 ];
 
 @NgModule({

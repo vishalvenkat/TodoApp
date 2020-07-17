@@ -8,30 +8,34 @@ export class TodoService {
   userId: number;
   constructor() {}
 
-  public getTodos(): Todo[] {
+  public getTodos = (): Todo[] => {
     let localStorageItem = JSON.parse(localStorage.getItem('Todos'));
     if (localStorageItem === null){
           return [];
    }
-   console.log(localStorageItem.Todos);
-   let todoForUser = localStorageItem.Todos.filter(todos => todos.userId === this.userId);
+   let todoForUser = localStorageItem.Todos.filter((todos: { userId: number; }) => todos.userId === this.userId);
     return todoForUser;
   }
 
-  public removeTodo(id: number): void {
+  public removeTodo = (id: number): void => {
     let todos = this.getTodos();
     todos = todos.filter((todo)=> todo.todoId != id);
     this.setLocalStorageTodos(todos);
   }
 
-  public addTodo(title: string, description: string, startTime: Date, endTime: Date): void {
+  public addTodo = (title: string, description: string, startTime: Date, endTime: Date, status: string): void => {
     let todos = this.getTodos();
-    let todo = new Todo(todos.length + 1, this.userId, title,description, startTime, endTime, "Open");
+    let todo = new Todo(todos.length + 1, this.userId, title,description, startTime, endTime, status);
     todos.push(todo);
     this.setLocalStorageTodos(todos);
   }
 
-  private setLocalStorageTodos(todos: Todo[]): void {
+  private setLocalStorageTodos = (todos: Todo[]): void => {
     localStorage.setItem('Todos', JSON.stringify({ Todos: todos }));
+  }
+  getTodosWithFilter = (reqStatus: string) : Todo[] => {
+    let todoList = this.getTodos();
+    todoList = todoList.filter(todo => todo.status === reqStatus);
+    return todoList === null? []: todoList;
   }
 }

@@ -18,5 +18,6 @@ export class GetStartedComponent implements OnInit {
   }
   registerNewUser = (credentials: {name: string, userName: string; password: string;}) => {
       let newUser = this.userService.registerNewUser(credentials.name, credentials.userName, credentials.password);
+      this.login(credentials);
   }
 }

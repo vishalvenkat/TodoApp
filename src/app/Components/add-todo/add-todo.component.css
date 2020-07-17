@@ -1,0 +1,8 @@
+@media (min-width: 768px) {
+    .padding {
+        margin-left: 10%;
+    }
+}
+.width {
+    width: 90%
+}
