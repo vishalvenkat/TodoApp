@@ -91,11 +91,13 @@ dataSourceForCompletedTodo: any;
   }
 
   dragAndDrop = (event: CdkDragDrop<Todo[]>, dataSource: any) => {
-    let table = this.getTable(event.container.data[0].status);
+    let table = this.getTable(event.container.id);
+    console.log(event.container.id);
+    console.log(event.previousContainer.id);
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      let targetTable = this.getTable(event.previousContainer.data[0].status);
+      let targetTable = this.getTable(event.previousContainer.id);
       transferArrayItem(event.previousContainer.data,
                         event.container.data,
                         event.previousIndex,
@@ -106,9 +108,9 @@ dataSourceForCompletedTodo: any;
   }
   getTable = (tableName: string) :MatTable<Todo> => {
     switch(tableName) {
-      case 'Open': return this.table;
-      case 'InProgress': return this.table1;
-      case 'Completed': return this.table2;
+      case 'cdk-drop-list-0': return this.table;
+      case 'cdk-drop-list-1': return this.table1;
+      case 'cdk-drop-list-2': return this.table2;
     }
   }
 }
