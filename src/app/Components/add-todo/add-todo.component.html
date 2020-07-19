@@ -15,35 +15,19 @@
 <div fxLayout="row" fxLayout.xs="column" >
 <div>
   <mat-form-field class="width">
-    <input formControlName="startDate" matInput [matDatepicker]="startDatePicker" placeholder="Start date">
+    <input formControlName="startDate" matInput [matDatepicker]="startDatePicker" [min]="minDate" placeholder="Start date">
     <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
     <mat-datepicker #startDatePicker></mat-datepicker>
     <mat-error>Pick start Date</mat-error>
   </mat-form-field>
 </div>
 <div>
-  <mat-form-field class="padding" class="width">
-    <input formControlName="endDate" matInput [matDatepicker]="endDatePicker" placeholder="End date">
-    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-    <mat-datepicker #endDatePicker></mat-datepicker>
-    <mat-error>Pick end date</mat-error>
+  <mat-form-field>
+    <input type="time" matInput formControlName="startTime" placeholder="Enter time to start your task">
+    <mat-error>Start time is required</mat-error>
   </mat-form-field>
-</div>
-</div>
-  <div fxLayout="row"  fxLayout.xs="column" >
-  <div>
-    <mat-form-field>
-      <input type="time" matInput formControlName="startTime" placeholder="Enter time to start your task">
-      <mat-error>Start time is required</mat-error>
-    </mat-form-field>
-    </div>
-    <div>
-      <mat-form-field class="padding">
-        <input type="time" matInput formControlName="endTime" placeholder="Enter time to end your task">
-        <mat-error>End time is required</mat-error>
-      </mat-form-field>
-    </div>
   </div>
+</div>
 <div>
   <mat-form-field>
     <mat-select formControlName="status" placeholder="Todo status">

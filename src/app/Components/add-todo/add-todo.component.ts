@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DatePipe, Time } from '@angular/common';
 @Component({
   selector: 'app-add-todo',
   templateUrl: './add-todo.component.html',
@@ -8,11 +9,14 @@ import {MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class AddTodoComponent implements OnInit {
   form: FormGroup;
+  minDate: Date = new Date();
+  minTime: number = Date.now();
   todoStatusList = [
     {view: 'Open(yet to start)', value: 'Open'},
     {view: 'In progress', value: 'InProgress'},
     {view: 'Completed', value: 'Completed'}
   ];
+  pipe = new DatePipe('en-us');
   statusValue: string;
   constructor(public dialogRef: MatDialogRef<AddTodoComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
 
@@ -21,18 +25,17 @@ export class AddTodoComponent implements OnInit {
   }
 
   addTodo = () => {
+    let newStartDate = this.pipe.transform(this.form.get('startDate').value, 'MM/dd/yyyy');
     this.dialogRef.close({title: this.form.get('title').value,
-    description: this.form.get('description').value, startDate: this.form.get('startDate').value,
-    endDate: this.form.get('endDate').value, startTime: this.form.get('startTime').value, endTime: this.form.get('endTime').value, status: this.form.get('status').value});
+    description: this.form.get('description').value, startDate: newStartDate,
+     startTime: this.form.get('startTime').value,  status: this.form.get('status').value});
   }
   initialiseFormGroup = () => {
     this.form = new FormGroup({
       title: new FormControl(this.data.title, Validators.required),
       description: new FormControl(this.data.description, Validators.required),
       startDate: new FormControl(this.data.startDate, Validators.required),
-      endDate: new FormControl(this.data.endDate, Validators.required),
       startTime: new FormControl(this.data.startTime, Validators.required),
-      endTime: new FormControl(this.data.endTime, Validators.required),
       status: new FormControl(this.data.status)
     });
     if (this.data.edit === true) {

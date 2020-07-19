@@ -23,9 +23,9 @@ export class TodoService {
     this.setLocalStorageTodos(todos);
   }
 
-  public addTodo = (title: string, description: string, startTime: Date, endTime: Date, status: string): void => {
+  public addTodo = (title: string, description: string, startDate: Date, endDate: Date,startTime: Date,endTime: Date, status: string): void => {
     let todos = this.getTodos();
-    let todo = new Todo(todos.length + 1, this.userId, title,description, startTime, endTime, status);
+    let todo = new Todo(todos.length + 1, this.userId, title, description, startDate,  startTime, status);
     todos.push(todo);
     this.setLocalStorageTodos(todos);
   }

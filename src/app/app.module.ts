@@ -16,6 +16,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HomePageComponent} from './Components/home-page/home-page.component';
 import { CommonModule } from '@angular/common';
 import { AddTodoComponent } from './Components/add-todo/add-todo.component';
+import { EditPromptComponent } from './Components/edit-prompt/edit-prompt.component';
 
 const appRoutes: Routes = [
   {path: '', component: IndexComponent},
@@ -32,7 +33,8 @@ const appRoutes: Routes = [
     LoginComponent,
     RegistrationComponent,
     HomePageComponent,
-    AddTodoComponent
+    AddTodoComponent,
+    EditPromptComponent
   ],
   imports: [
     BrowserModule,
@@ -45,7 +47,7 @@ const appRoutes: Routes = [
     CommonModule
   ],
   providers: [],
-  entryComponents: [GetStartedComponent, AddTodoComponent],
+  entryComponents: [GetStartedComponent, AddTodoComponent, EditPromptComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
