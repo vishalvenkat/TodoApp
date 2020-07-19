@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Todo} from '../Class/todo';
+import { DatePipe } from '@angular/common';
 @Injectable({
   providedIn: 'root'
 })
@@ -43,5 +44,38 @@ export class TodoService {
     let index = todoList.findIndex(todos => todos.todoId === todo.todoId);
     todoList[index] = todo;
     this.setLocalStorageTodos(todoList);
+  }
+  getOpenTodosNow = () => {
+    let todoList = this.getTodosWithFilter('Open');
+    if (todoList.length === 0) return {seconds:-1, title: '', pastTodos:[]};
+    let today = new Date();
+    let pipe = new DatePipe('en-us');
+    let minSeconds = today.valueOf();
+    let latestTodoName: string;
+    let pastTodos: Todo[] = [];
+    let updatedTodoList = todoList.filter(todos => todos.startDate.toString() === pipe.transform(today, 'MM/dd/yyyy'));
+    updatedTodoList.forEach(todos => {
+    let date = new Date(todos.startDate);
+    let hoursAndMinutes = todos.startTime.toString().split(':');
+    date.setHours(Number(hoursAndMinutes[0]));
+    date.setMinutes(Number(hoursAndMinutes[1]));
+    let localMin = date.valueOf() - today.valueOf();
+    if (localMin > 0 && localMin < minSeconds){
+         minSeconds = localMin;
+         latestTodoName = todos.todoTitle;
+      } else {
+          pastTodos.push(todos);
+      }
+    });
+    if (minSeconds === today.valueOf() && pastTodos.length === 0){
+      console.log('No new and past todos');
+      return {seconds: -1, title: '', pastTodos: []};
+    }
+    if (pastTodos.length > 0 && minSeconds === today.valueOf()) {
+      console.log(`No new but have past ${pastTodos.length}`);
+      return {seconds: -1, title:'', pastTodos:pastTodos};
+    } 
+    console.log('Have new ones');
+    return {seconds:minSeconds,title:latestTodoName, pastTodos: pastTodos};
   }
 }

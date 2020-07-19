@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnChanges } from '@angular/core';
 import {TodoService} from '../../Services/todo.service';
 import { UserService } from 'src/app/Services/user.service';
 import {Todo} from '../../Class/todo';
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.css']
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements OnInit{
   @ViewChild('table') table: MatTable<Todo>;
   @ViewChild('table1') table1: MatTable<Todo>;
   @ViewChild('table2') table2: MatTable<Todo>;
@@ -42,8 +42,35 @@ dataSourceForCompletedTodo: any;
     this.map.set('cdk-drop-list-0', 'Open');
     this.map.set('cdk-drop-list-1','InProgress');
     this.map.set('cdk-drop-list-2','Completed');
-  }
 
+    // To notify user about the Open todo's 
+    this.notifyUser();
+    
+  }
+  notifyUser = () => {
+    let nextSecond = this.todoService.getOpenTodosNow();
+    if(nextSecond.seconds !== -1) {
+      setTimeout (() => {
+        this.showNotification(nextSecond.title, false);
+      }, nextSecond.seconds)
+      for (let todos of nextSecond.pastTodos) this.showNotification(todos.todoTitle, true);
+    }
+    if (nextSecond.seconds === -1 && nextSecond.pastTodos.length > 0) {
+      for (let todo of nextSecond.pastTodos) this.showNotification(todo.todoTitle, true);
+    }
+  }
+  showNotification = (title: string, past: boolean) => {
+    if (past) {
+      const notification = new Notification("You might have missed", {
+        body: `Hi ${this.userService.name}, This is past due ${title}`
+      });
+    } else {
+    const notification = new Notification("Time to kick start!!", {
+      body: `Hi ${this.userService.name}, time to start ${title}`
+    });
+    this.notifyUser();
+  }
+}
   addTodos = (): void  => {
       let ref = this.matdialog.open(AddTodoComponent, {data: {
         edit: false,
@@ -54,6 +81,7 @@ dataSourceForCompletedTodo: any;
         if(result !== undefined) {
         this.todoService.addTodo(result.title, result.description, result.startDate, result.endDate, result.startTime, result.endTime, result.status);
         this.updateTodoList(result.status);
+        if (result.status === 'Open') this.notifyUser();
       }
     })
   }
@@ -93,6 +121,7 @@ dataSourceForCompletedTodo: any;
         todo.status = data.status;
         this.todoService.updateTodo(todo);
         this.updateTodoList(data.status);
+        if (data.status === 'Open') this.notifyUser();
       }
     })
   }
