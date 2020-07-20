@@ -7,9 +7,9 @@
     </mat-form-field>
     <mat-form-field>
       <input matInput [type]="hide ? 'password' : 'text'" name="password" placeholder="password" [(ngModel)]="password" required>
-      <button mat-icon-button matSuffix (click)="hide = !hide">
+      <button mat-icon-button matSuffix (click)="hide = !hide" matTooltip="Show password">
         <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
       </button>
     </mat-form-field>
-    <button mat-raised-button type="submit" color="warn" (click)="register()" matTooltip="Join " [matTooltipPosition] = "right">Login</button>
+    <button mat-raised-button type="submit" color="warn" (click)="register()" matTooltip="Register" >Register</button>
   </form>

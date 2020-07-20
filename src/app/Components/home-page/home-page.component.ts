@@ -7,7 +7,6 @@ import { AddTodoComponent } from '../add-todo/add-todo.component';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatTable } from '@angular/material/table';
 import { EditPromptComponent } from '../edit-prompt/edit-prompt.component';
-import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-home-page',
@@ -39,9 +38,9 @@ dataSourceForCompletedTodo: any;
     this.initInProgressTodoList();
     this.initCompletedTodoList();
     this.map = new Map<string, string>();
-    this.map.set('cdk-drop-list-0', 'Open');
-    this.map.set('cdk-drop-list-1','InProgress');
-    this.map.set('cdk-drop-list-2','Completed');
+    this.map.set('cdk-drop-list-3', 'Open');
+    this.map.set('cdk-drop-list-4','InProgress');
+    this.map.set('cdk-drop-list-5','Completed');
 
     // To notify user about the Open todo's 
     this.notifyUser();
@@ -52,24 +51,32 @@ dataSourceForCompletedTodo: any;
     if(nextSecond.seconds !== -1) {
       setTimeout (() => {
         this.showNotification(nextSecond.title, false);
-      }, nextSecond.seconds)
-      for (let todos of nextSecond.pastTodos) this.showNotification(todos.todoTitle, true);
+      }, nextSecond.seconds);
+      for (let todos of nextSecond.pastTodos) this.showNotification(todos, true);
     }
     if (nextSecond.seconds === -1 && nextSecond.pastTodos.length > 0) {
-      for (let todo of nextSecond.pastTodos) this.showNotification(todo.todoTitle, true);
+      console.log('going to notify past notifications');
+      for (let todo of nextSecond.pastTodos){
+        this.showNotification(todo, true);
+      }
     }
   }
-  showNotification = (title: string, past: boolean) => {
+  showNotification = (todo: Todo, past: boolean) => {
+    let titleString: string;
+    let bodyString: string; 
+    let notification: Notification;
     if (past) {
-      const notification = new Notification("You might have missed", {
-        body: `Hi ${this.userService.name}, This is past due ${title}`
+      notification = new Notification('You might have missed', {
+        body: `Hi ${this.userService.name}, Your todo: ${todo.todoTitle} is past due`,
+        icon: '../../../assets/Images/Logo.png'
       });
-    } else {
-    const notification = new Notification("Time to kick start!!", {
-      body: `Hi ${this.userService.name}, time to start ${title}`
-    });
-    this.notifyUser();
-  }
+    }
+    else {
+      notification = new Notification('Time to kick start!!', {
+        body: `Hi ${this.userService.name}, time to start ${todo.todoTitle}`,
+        icon: '../../../assets/Images/Logo.png'
+      });
+    }
 }
   addTodos = (): void  => {
       let ref = this.matdialog.open(AddTodoComponent, {data: {
@@ -128,6 +135,7 @@ dataSourceForCompletedTodo: any;
 
   dragAndDrop = (event: CdkDragDrop<Todo[]>, dataSource: any) => {
     let table = this.getTable(event.container.id);
+    console.log(event);
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       table.renderRows();
@@ -140,6 +148,7 @@ dataSourceForCompletedTodo: any;
             event.container.data,
             event.previousIndex,
             event.currentIndex);
+            console.log(this.getTable(event.previousContainer.id));
             targetTable.renderRows();
             event.container.data[event.currentIndex].status = this.map.get(event.container.id);
             this.todoService.updateTodo(event.container.data[event.currentIndex]);
@@ -150,9 +159,9 @@ dataSourceForCompletedTodo: any;
   }
   getTable = (tableName: string) :MatTable<Todo> => {
     switch(tableName) {
-      case 'cdk-drop-list-0': return this.table;
-      case 'cdk-drop-list-1': return this.table1;
-      case 'cdk-drop-list-2': return this.table2;
+      case 'cdk-drop-list-3': return this.table;
+      case 'cdk-drop-list-4': return this.table1;
+      case 'cdk-drop-list-5': return this.table2;
     }
   }
   editPrompt = (currentStatus: string, newStatus: string) => {

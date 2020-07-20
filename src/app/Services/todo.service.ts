@@ -47,11 +47,11 @@ export class TodoService {
   }
   getOpenTodosNow = () => {
     let todoList = this.getTodosWithFilter('Open');
-    if (todoList.length === 0) return {seconds:-1, title: '', pastTodos:[]};
+    if (todoList.length === 0) return {seconds:-1, title: null, pastTodos:[]};
     let today = new Date();
     let pipe = new DatePipe('en-us');
     let minSeconds = today.valueOf();
-    let latestTodoName: string;
+    let latestTodoName: Todo;
     let pastTodos: Todo[] = [];
     let updatedTodoList = todoList.filter(todos => todos.startDate.toString() === pipe.transform(today, 'MM/dd/yyyy'));
     updatedTodoList.forEach(todos => {
@@ -62,18 +62,18 @@ export class TodoService {
     let localMin = date.valueOf() - today.valueOf();
     if (localMin > 0 && localMin < minSeconds){
          minSeconds = localMin;
-         latestTodoName = todos.todoTitle;
+         latestTodoName = todos;
       } else {
           pastTodos.push(todos);
       }
     });
     if (minSeconds === today.valueOf() && pastTodos.length === 0){
       console.log('No new and past todos');
-      return {seconds: -1, title: '', pastTodos: []};
+      return {seconds: -1, title: null, pastTodos: []};
     }
     if (pastTodos.length > 0 && minSeconds === today.valueOf()) {
       console.log(`No new but have past ${pastTodos.length}`);
-      return {seconds: -1, title:'', pastTodos:pastTodos};
+      return {seconds: -1, title:null, pastTodos:pastTodos};
     } 
     console.log('Have new ones');
     return {seconds:minSeconds,title:latestTodoName, pastTodos: pastTodos};

@@ -24,8 +24,8 @@
 <div>
   <mat-form-field>
     <input type="time" matInput formControlName="startTime" placeholder="Enter time to start your task">
-    <mat-error>Start time is required</mat-error>
   </mat-form-field>
+  <mat-error>{{minTimeError}}</mat-error>
   </div>
 </div>
 <div>
@@ -39,10 +39,10 @@
 </div>
 <div fxLayout="row" fxLayoutAlign="center stretch">
 <div  *ngIf="!this.data.edit">    
-  <button mat-raised-button type="submit" color="warn" [disabled]="form.invalid" matTooltip="Add Todo" (click)="addTodo()">Add Todo</button>
+  <button mat-raised-button type="submit" color="warn" [disabled]="formValidate()" matTooltip="Add Todo" (click)="addTodo()">Add Todo</button>
 </div>
 <div *ngIf="this.data.edit">
-  <button mat-raised-button color="warn" (click) = "editTodo()">edit</button> 
+  <button mat-raised-button color="warn" matTooltip="Edit todo" (click) = "editTodo()">edit</button> 
 </div>
 </div>
     </form>
