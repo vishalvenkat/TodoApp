@@ -3,19 +3,19 @@ export class Todo {
     userId: number;
     todoTitle: string;
     todoDescription: string;
-    startDate: Date;
+    dueDate: Date;
     status: string;
-    startTime: Date;
+    dueTime: Date;
 
 
     constructor(todoId: number, userId: number, todoTitle: string,
-        todoDescription: string, startDate: Date,startTime: Date, status: string) {
+        todoDescription: string, dueDate: Date,dueTime: Date, status: string) {
             this.todoId = todoId;
             this.userId = userId;
             this.todoTitle = todoTitle;
             this.todoDescription = todoDescription;
-            this.startDate = startDate;
-            this.startTime = startTime;
+            this.dueDate = dueDate;
+            this.dueTime = dueTime;
             this.status = status;
     }
 }

@@ -12,23 +12,23 @@
         <mat-error>Description is required</mat-error>
       </mat-form-field>
   </div>
-<div fxLayout="row" fxLayout.xs="column" >
+<div fxLayout="row" fxLayout.xs="column">
 <div>
   <mat-form-field class="width">
-    <input formControlName="startDate" matInput [matDatepicker]="startDatePicker" [min]="minDate" placeholder="Start date">
-    <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-    <mat-datepicker #startDatePicker></mat-datepicker>
-    <mat-error>Pick start Date</mat-error>
+    <input formControlName="dueDate" matInput [matDatepicker]="dueDatePicker" [min]="minDate" placeholder="Due date">
+    <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+    <mat-datepicker #dueDatePicker></mat-datepicker>
+    <mat-error>Pick valid start Date</mat-error>
   </mat-form-field>
 </div>
 <div>
   <mat-form-field>
-    <input type="time" matInput formControlName="startTime" placeholder="Enter time to start your task">
+    <input type="time" matInput formControlName="dueTime" placeholder="Enter time to start your task">
   </mat-form-field>
-  <mat-error>{{minTimeError}}</mat-error>
+  <mat-error *ngIf="this.isValidToCheckTime()">{{minTimeError}}</mat-error>
   </div>
 </div>
-<div>
+<div *ngIf="this.data.edit">
   <mat-form-field>
     <mat-select formControlName="status" placeholder="Todo status">
       <mat-option *ngFor="let status of todoStatusList" [value] = "status.value">
@@ -38,11 +38,8 @@
   </mat-form-field>
 </div>
 <div fxLayout="row" fxLayoutAlign="center stretch">
-<div  *ngIf="!this.data.edit">    
-  <button mat-raised-button type="submit" color="warn" [disabled]="formValidate()" matTooltip="Add Todo" (click)="addTodo()">Add Todo</button>
-</div>
-<div *ngIf="this.data.edit">
-  <button mat-raised-button color="warn" matTooltip="Edit todo" (click) = "editTodo()">edit</button> 
+<div>    
+  <button mat-raised-button type="submit" color="warn" [disabled]="formValidate()" matTooltip="{{submitButtonText}}" (click)="addTodo()">{{submitButtonText}}</button>
 </div>
 </div>
     </form>

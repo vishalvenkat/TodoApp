@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {TodoService} from '../../Services/todo.service';
 import { UserService } from 'src/app/Services/user.service';
 import {Todo} from '../../Class/todo';
@@ -27,11 +27,12 @@ map: Map<string, string>;
 dataSourceForOpenTodo: any;
 dataSourceForInProgressTodo: any;
 dataSourceForCompletedTodo: any;
+
   constructor(private todoService: TodoService, private userService: UserService, private matdialog:MatDialog, private router:Router) {
     if (userService.userId === undefined) this.router.navigate(['']);
-   }
-
+  }
   ngOnInit(): void {
+    this.userService.isLoggedIn.emit(true);
     this.user = this.userService.name;
     this.todoService.userId = this.userService.userId;
     this.initOpenTodoList();
@@ -41,29 +42,51 @@ dataSourceForCompletedTodo: any;
     this.map.set('cdk-drop-list-3', 'Open');
     this.map.set('cdk-drop-list-4','InProgress');
     this.map.set('cdk-drop-list-5','Completed');
-
-    // To notify user about the Open todo's 
     this.notifyUser();
-    
   }
   notifyUser = () => {
     let nextSecond = this.todoService.getOpenTodosNow();
-    if(nextSecond.seconds !== -1) {
-      setTimeout (() => {
-        this.showNotification(nextSecond.title, false);
-      }, nextSecond.seconds);
-      for (let todos of nextSecond.pastTodos) this.showNotification(todos, true);
-    }
-    if (nextSecond.seconds === -1 && nextSecond.pastTodos.length > 0) {
-      console.log('going to notify past notifications');
-      for (let todo of nextSecond.pastTodos){
-        this.showNotification(todo, true);
+    if (nextSecond.pastTodos.length > 0) {
+      for (let todos of nextSecond.pastTodos){
+        this.showNotification(todos, true);
+        let ref = this.editPrompt(todos.status, 'InProgress', todos.todoTitle);
+        ref.afterClosed().subscribe(result => {
+          if(result === 'true') {
+            todos.status = 'InProgress';
+            this.todoService.updateTodo(todos);
+            this.initOpenTodoList();
+            this.initInProgressTodoList();
+          } else {
+            this.editTodo(todos);
+          }
+        })
       }
+    }
+    if(nextSecond.seconds !== -1) {
+      let notificationTimeout = setTimeout (() => {
+        this.showNotification(nextSecond.title, false);
+        let ref = this.editPrompt(nextSecond.title.status, 'InProgress', nextSecond.title.todoTitle);
+        ref.afterClosed().subscribe(result => {
+          if(result === 'true') {
+            nextSecond.title.status = 'InProgress';
+            this.todoService.updateTodo(nextSecond.title);
+            this.initOpenTodoList();
+            this.initInProgressTodoList();
+          } else {
+            this.editTodo(nextSecond.title);
+          }
+        })
+      }, nextSecond.seconds);
+      // clears the notification whenever the user logout
+      this.userService.isLoggedIn.subscribe((loggedIn: boolean) => {
+        if(!loggedIn) {
+          console.log(`logged out successfully`);
+          clearTimeout(notificationTimeout);
+        } 
+      })
     }
   }
   showNotification = (todo: Todo, past: boolean) => {
-    let titleString: string;
-    let bodyString: string; 
     let notification: Notification;
     if (past) {
       notification = new Notification('You might have missed', {
@@ -81,12 +104,12 @@ dataSourceForCompletedTodo: any;
   addTodos = (): void  => {
       let ref = this.matdialog.open(AddTodoComponent, {data: {
         edit: false,
-        title: '', description: '', startDate: '', startTime: '',  status: ''
+        title: '', description: '', dueDate: '', dueTime: '',  status: ''
       }});
       ref.afterClosed().subscribe(result => {
         console.log('closed while add')
         if(result !== undefined) {
-        this.todoService.addTodo(result.title, result.description, result.startDate, result.endDate, result.startTime, result.endTime, result.status);
+        this.todoService.addTodo(result.title, result.description, result.dueDate, result.dueTime, result.status);
         this.updateTodoList(result.status);
         if (result.status === 'Open') this.notifyUser();
       }
@@ -117,16 +140,18 @@ dataSourceForCompletedTodo: any;
     let ref = this.matdialog.open(AddTodoComponent, {data: {
       edit: true,
       title: todo.todoTitle, description: todo.todoDescription,
-      startDate: new Date(todo.startDate), startTime: todo.startTime, status: todo.status
+      dueDate: new Date(todo.dueDate), dueTime: todo.dueTime, status: todo.status
     }});
     ref.afterClosed().subscribe(data => {
       if (data !== undefined) {
         todo.todoTitle = data.title;
         todo.todoDescription = data.description;
-        todo.startDate = data.startDate;
-        this.updateTodoList(todo.status);
+        todo.dueDate = data.dueDate;
+        todo.dueTime = data.dueTime;
+        let previousStatus = todo.status;
         todo.status = data.status;
         this.todoService.updateTodo(todo);
+        this.updateTodoList(previousStatus);
         this.updateTodoList(data.status);
         if (data.status === 'Open') this.notifyUser();
       }
@@ -141,9 +166,15 @@ dataSourceForCompletedTodo: any;
       table.renderRows();
     } else {
       let targetTable = this.getTable(event.previousContainer.id);
-      let ref = this.editPrompt(this.map.get(event.previousContainer.id), this.map.get(event.container.id));
+      let ref = this.editPrompt(this.map.get(event.previousContainer.id), this.map.get(event.container.id), event.previousContainer.data[event.previousIndex].todoTitle);
       ref.afterClosed().subscribe(result => {
         if (result === 'true') {
+          if(this.map.get(event.container.id) === 'Open'){
+            console.log(event.previousContainer.data[event.previousIndex].todoTitle);
+            this.editTodo(event.previousContainer.data[event.previousIndex]);
+            targetTable.renderRows();
+            table.renderRows();       
+          } else{
             transferArrayItem(event.previousContainer.data,
             event.container.data,
             event.previousIndex,
@@ -153,7 +184,7 @@ dataSourceForCompletedTodo: any;
             event.container.data[event.currentIndex].status = this.map.get(event.container.id);
             this.todoService.updateTodo(event.container.data[event.currentIndex]);
             table.renderRows();                
-        }
+        }}
       })
   }
   }
@@ -164,9 +195,9 @@ dataSourceForCompletedTodo: any;
       case 'cdk-drop-list-5': return this.table2;
     }
   }
-  editPrompt = (currentStatus: string, newStatus: string) => {
+  editPrompt = (currentStatus: string, newStatus: string, todoTitle: string) => {
     let ref = this.matdialog.open(EditPromptComponent, {data: {
-      currentStatus: currentStatus, newStatus: newStatus
+      currentStatus: currentStatus, newStatus: newStatus, title: todoTitle
     }});
       return ref;
   }

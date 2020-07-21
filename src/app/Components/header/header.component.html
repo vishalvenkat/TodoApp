@@ -1,6 +1,9 @@
-<mat-toolbar color="warn" fxLayout="row" fxLayoutAlign="center center">
+<mat-toolbar color="warn" fxLayout="row" fxLayoutAlign="space-around center">
     <div>
         <img src="../../../assets/Images/Logo.png" alt="logo">
     </div>
     <button mat-button>TodoApp</button>
+    <div *ngIf="isLoggedIn">
+        <button mat-button matTooltip="Logout" (click)="logout()"><mat-icon>exit_to_app</mat-icon></button>
+    </div>
 </mat-toolbar>

@@ -5,37 +5,30 @@ import { DatePipe } from '@angular/common';
   providedIn: 'root'
 })
 export class TodoService {
-  private nextId: number;
   userId: number;
   constructor() {}
 
-  public getTodos = (): Todo[] => {
-    let localStorageItem = JSON.parse(localStorage.getItem('Todos'));
-    if (localStorageItem === null){
-          return [];
-   }
-   let todoForUser = localStorageItem.Todos.filter((todos: { userId: number; }) => todos.userId === this.userId);
+  getTodos = (): Todo[] => {
+    let localStorageItem = JSON.parse(localStorage.getItem('todos'));
+    return localStorageItem === null ?  [] :  localStorageItem.todos;
+  }
+  getTodosForUser = (): Todo[] => {
+    let todoList = this.getTodos();
+    let todoForUser = todoList.filter(todos => todos.userId === this.userId);
     return todoForUser;
   }
-
-  public removeTodo = (id: number): void => {
-    let todos = this.getTodos();
-    todos = todos.filter((todo)=> todo.todoId != id);
-    this.setLocalStorageTodos(todos);
-  }
-
-  public addTodo = (title: string, description: string, startDate: Date, endDate: Date,startTime: Date,endTime: Date, status: string): void => {
+    addTodo = (title: string, description: string, startDate: Date, startTime: Date, status: string): void => {
     let todos = this.getTodos();
     let todo = new Todo(todos.length + 1, this.userId, title, description, startDate,  startTime, status);
     todos.push(todo);
     this.setLocalStorageTodos(todos);
   }
 
-  private setLocalStorageTodos = (todos: Todo[]): void => {
-    localStorage.setItem('Todos', JSON.stringify({ Todos: todos }));
+    setLocalStorageTodos = (todos: Todo[]): void => {
+    localStorage.setItem('todos', JSON.stringify({todos}));
   }
   getTodosWithFilter = (reqStatus: string) : Todo[] => {
-    let todoList = this.getTodos();
+    let todoList = this.getTodosForUser();
     todoList = todoList.filter(todo => todo.status === reqStatus);
     return todoList === null? []: todoList;
   }
@@ -53,10 +46,10 @@ export class TodoService {
     let minSeconds = today.valueOf();
     let latestTodoName: Todo;
     let pastTodos: Todo[] = [];
-    let updatedTodoList = todoList.filter(todos => todos.startDate.toString() === pipe.transform(today, 'MM/dd/yyyy'));
+    let updatedTodoList = todoList.filter(todos => todos.dueDate.toString() === pipe.transform(today, 'MM/dd/yyyy'));
     updatedTodoList.forEach(todos => {
-    let date = new Date(todos.startDate);
-    let hoursAndMinutes = todos.startTime.toString().split(':');
+    let date = new Date(todos.dueDate);
+    let hoursAndMinutes = todos.dueTime.toString().split(':');
     date.setHours(Number(hoursAndMinutes[0]));
     date.setMinutes(Number(hoursAndMinutes[1]));
     let localMin = date.valueOf() - today.valueOf();

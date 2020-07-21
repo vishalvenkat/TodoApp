@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { User } from '../Class/user';
 @Injectable({
   providedIn: 'root'
@@ -7,6 +7,7 @@ export class UserService {
 nextId: number;
 name: string;
 userId: number;
+isLoggedIn = new EventEmitter<boolean>();
   constructor() { 
     let userList = this.getUserList();
     userList.length === 0 ? this.nextId = 0 : this.nextId = userList[userList.length - 1].userId + 1; 
@@ -21,7 +22,7 @@ userId: number;
     return user === undefined ? false : true; 
     }
   getUserList = () => {
-    let UserList = JSON.parse(localStorage.getItem('User'));
+    let UserList = JSON.parse(localStorage.getItem('user'));
     return UserList === null ? [] : UserList.user;
   }
   
@@ -32,7 +33,7 @@ userId: number;
     let newUser = new User(this.nextId++, name, userName, password);
     let userList = this.getUserList();
     userList.push(newUser);
-    localStorage.setItem('User', JSON.stringify({ user: userList }));
+    localStorage.setItem('user', JSON.stringify({ user: userList }));
     return true;
 }
 }
