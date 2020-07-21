@@ -37,8 +37,8 @@ export class AddTodoComponent implements OnInit {
   }
   initialiseFormGroup = () => {
     this.form = new FormGroup({
-      title: new FormControl(this.data.title, Validators.required),
-      description: new FormControl(this.data.description, Validators.required),
+      title: new FormControl(this.data.title, [Validators.required, Validators.maxLength(250)]),
+      description: new FormControl(this.data.description, [Validators.required, Validators.maxLength(250)]),
       dueDate: new FormControl(this.data.dueDate, Validators.required),
       dueTime: new FormControl(this.data.dueTime, [Validators.required]),
       status: new FormControl(this.data.status)
